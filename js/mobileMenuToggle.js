@@ -1,48 +1,69 @@
 const menuButton = document.getElementById("menu-button");
 const menu = document.getElementById("menu");
-
-/*
-모바일 환경에서 menu, 이 menu는 이벤트 위임으로 최적화하면 불필요한 코드가 많은 함수입니다. 시간상 최적화하지 않고 넘깁니다.
-*/
 const mobileMenu = document.getElementById("mobileMenu");
 
-window.addEventListener("click", (event) => {
-    if (event.target === menuButton) {
-        if (mobileMenu.innerHTML === "") {
-            mobileMenu.innerHTML = menu.innerHTML;
-            const menuItems = mobileMenu.querySelectorAll("a");
-            menuItems.forEach((item, index) => {
-                item.classList.add(...mobileMenuStyle.split(" "));
-                if (index == 0) {
-                    item.classList.add("mt-1.5");
-                }
-                item.style.animation = `slideDown forwards ${index * 0.2}s`;
-            });
-        } else {
-            mobileMenu.innerHTML = "";
-        }
-    } else if (event.target.parentNode === mobileMenu) {
-        event.preventDefault();
+// 메뉴를 닫는 함수
+function closeMenu() {
+    mobileMenu.innerHTML = "";
+}
 
-        if (event.target.innerText + ".md" === "blog.md") {
+// 모바일 메뉴 열기/닫기 처리
+menuButton.addEventListener("click", () => {
+    // 메뉴가 열려 있으면 닫기, 열려 있지 않으면 열기
+    if (mobileMenu.innerHTML === "") {
+        // 메뉴 항목 복사
+        mobileMenu.innerHTML = menu.innerHTML;
+
+        // 메뉴 항목 스타일 적용
+        const menuItems = mobileMenu.querySelectorAll("a");
+        menuItems.forEach((item, index) => {
+            item.classList.add(...mobileMenuStyle.split(" "));  // 스타일 적용
+            if (index === 0) {
+                item.classList.add("mt-1.5");
+            }
+            // 애니메이션 추가
+            item.style.animation = `slideDown forwards ${index * 0.2}s`;
+        });
+    } else {
+        closeMenu();
+    }
+});
+
+// 메뉴 항목 클릭 시 처리
+mobileMenu.addEventListener("click", (event) => {
+    // 클릭된 요소가 메뉴 항목인지 확인
+    if (event.target && event.target.tagName === "A") {
+        event.preventDefault();  // 기본 링크 동작 방지
+
+        const itemText = event.target.innerText + ".md";  // 클릭된 메뉴 항목 텍스트
+
+        if (itemText === "blog.md") {
+            // 블로그 리스트 로딩
             if (blogList.length === 0) {
-                // 블로그 리스트 로딩
                 initDataBlogList().then(() => {
                     renderBlogList();
                 });
             } else {
                 renderBlogList();
             }
-            // console.log(origin)
+
+            // URL 업데이트
             const url = new URL(origin);
-            url.searchParams.set("menu", event.target.innerText + ".md");
+            url.searchParams.set("menu", itemText);
             window.history.pushState({}, "", url);
-            mobileMenu.innerHTML = "";
         } else {
-            renderOtherContents(event.target.innerText + ".md");
-            mobileMenu.innerHTML = "";
+            renderOtherContents(itemText);
         }
-    } else {
-        mobileMenu.innerHTML = "";
+
+        // 메뉴 닫기
+        closeMenu();
+    }
+});
+
+// 메뉴 외부 클릭 시 메뉴 닫기
+window.addEventListener("click", (event) => {
+    // 메뉴 외부를 클릭했을 경우 메뉴 닫기
+    if (!mobileMenu.contains(event.target) && event.target !== menuButton) {
+        closeMenu();
     }
 });
