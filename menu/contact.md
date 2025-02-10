@@ -1,1 +1,1 @@
-작성 ing
+이메일 : heea0907.engr@gmail.com

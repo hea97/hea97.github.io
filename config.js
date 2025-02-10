@@ -15,7 +15,7 @@ const users = [
     id: 0, // default author
     username: "hea97",
     company: "",
-    position: "CEO",
+    position: "",
     img: "img/user/1e65f547601ee187b1eef4e76ed9357e.jpg",
   },
 ];

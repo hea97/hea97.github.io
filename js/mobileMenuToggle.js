@@ -37,8 +37,9 @@ mobileMenu.addEventListener("click", (event) => {
 
         const itemText = event.target.innerText + ".md";  // 클릭된 메뉴 항목 텍스트
 
+        // 해당 페이지로 이동
         if (itemText === "blog.md") {
-            // 블로그 리스트 로딩
+            // 블로그 페이지로 이동
             if (blogList.length === 0) {
                 initDataBlogList().then(() => {
                     renderBlogList();
@@ -47,12 +48,19 @@ mobileMenu.addEventListener("click", (event) => {
                 renderBlogList();
             }
 
-            // URL 업데이트
-            const url = new URL(origin);
+            // URL을 main 페이지로 변경
+            const url = new URL(window.location.href);
+            url.pathname = "/";  // main 페이지로 리디렉션
             url.searchParams.set("menu", itemText);
-            window.history.pushState({}, "", url);
+            window.history.pushState({}, "", url);  // URL 업데이트
         } else {
+            // 블로그 외의 페이지 처리 (about.md, contact.md)
             renderOtherContents(itemText);
+            
+            // URL 업데이트
+            const url = new URL(window.location.href);
+            url.pathname = `/${itemText}`;  // 각 항목에 맞는 페이지로 업데이트
+            window.history.pushState({}, "", url);
         }
 
         // 메뉴 닫기
